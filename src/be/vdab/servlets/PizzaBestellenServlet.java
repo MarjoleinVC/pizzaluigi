@@ -48,6 +48,12 @@ public class PizzaBestellenServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		if (request.getParameterValues("id") != null) {
+			if (request.getCookies() == null) {
+				request.setAttribute("fout",
+						"Dit werkt enkel als cookies aanstaan.");
+				request.getRequestDispatcher(VIEW).forward(request, response);
+				return;
+			}
 			HttpSession session = request.getSession();
 			@SuppressWarnings("unchecked")
 			Set<Long> pizzaIdsInMandje = (Set<Long>) session

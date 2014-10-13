@@ -22,8 +22,8 @@
 			<input type="submit" value="Toevoegen aan mandje" id="toevoegknop">
 		</form>
 	</c:if>
-	<c:if test="${not empty pizzasInMandje}">µ
-	<h2>Uw mandje</h2>
+	<c:if test="${not empty pizzasInMandje}">
+		<h2>Uw mandje</h2>
 		<ul>
 			<c:forEach var="pizza" items="${pizzasInMandje}">
 				<li><c:out value="${pizza.naam}" /></li>
@@ -35,5 +35,8 @@
 			document.getElementById("toevoegknop").disabled = true;
 		};
 	</script>
+	<c:if test="${not empty fout}">
+		<div class="fout">${fout}</div>
+	</c:if>
 </body>
 </html>
