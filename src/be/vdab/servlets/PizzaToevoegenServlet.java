@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.Resource;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
@@ -12,6 +13,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
+import javax.sql.DataSource;
 
 import be.vdab.dao.PizzaDAO;
 import be.vdab.entities.Pizza;
@@ -26,18 +28,22 @@ public class PizzaToevoegenServlet extends HttpServlet {
 	private static final String VIEW = "/WEB-INF/JSP/pizzatoevoegen.jsp";
 	private static final String REDIRECT_URL = "%s/pizzas.htm";// SUCCESS_VIEW =
 																// "/WEB-INF/JSP/pizzas.jsp";
-	private final PizzaDAO pizzaDAO = new PizzaDAO();
+	private final transient PizzaDAO pizzaDAO = new PizzaDAO();
+
+	@Resource(name = PizzaDAO.JNDI_NAME)
+	void setDataSource(DataSource dataSource) {
+		pizzaDAO.setDataSource(dataSource);
+	}
 
 	@Override
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-			request.getRequestDispatcher(VIEW).forward(request, response);
-			}
+		request.getRequestDispatcher(VIEW).forward(request, response);
+	}
 
 	@Override
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		request.setCharacterEncoding("UTF-8");
 		Map<String, String> fouten = new HashMap<>();
 		String naam = request.getParameter("naam");
 		if (!Pizza.isNaamValid(naam)) {
@@ -67,8 +73,8 @@ public class PizzaToevoegenServlet extends HttpServlet {
 				fotoPart.write(String.format("%s/%d.jpg", pizzaFotosPad,
 						pizza.getId()));
 			}
-			response.sendRedirect(response.encodeRedirectURL(String.format(REDIRECT_URL,
-					request.getContextPath())));
+			response.sendRedirect(response.encodeRedirectURL(String.format(
+					REDIRECT_URL, request.getContextPath())));
 		} else {
 			request.setAttribute("fouten", fouten);
 			request.getRequestDispatcher(VIEW).forward(request, response);
